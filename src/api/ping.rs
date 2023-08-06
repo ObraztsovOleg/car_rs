@@ -5,20 +5,24 @@ use actix_web::{
     Responder
 };
 use ctor::ctor;
-// use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex};
 
 #[ctor]
-static LED_16: LED = LED::new(16);
+static LED_16: Arc<Mutex<rust_gpiozero::LED>> = Arc::new(Mutex::new(LED::new(16)));
 
 
 #[get("/enable")]
 async fn enable() -> impl Responder {
-    LED_16.on();
+    let led_mutex = Arc::clone(&LED_16);
+    let led = led_mutex.lock().unwrap();
+    led.on();
     HttpResponse::Ok().json("Pin enabled")
 }
 
 #[get("/disable")]
 async fn disable() -> impl Responder {
-    LED_16.off();
+    let led_mutex = Arc::clone(&LED_16);
+    let led = led_mutex.lock().unwrap();
+    led.off();
     HttpResponse::Ok().json("Pin disabled")
 }
