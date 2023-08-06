@@ -4,19 +4,21 @@ use actix_web::{
     HttpResponse,
     Responder
 };
+use ctor::ctor;
+// use std::sync::{Arc, Mutex};
+
+#[ctor]
+static LED_16: LED = LED::new(16);
+
 
 #[get("/enable")]
 async fn enable() -> impl Responder {
-    let led_16 = LED::new(16);
-
-    led_16.on();
+    LED_16.on();
     HttpResponse::Ok().json("Pin enabled")
 }
 
 #[get("/disable")]
 async fn disable() -> impl Responder {
-    let led_16 = LED::new(16);
-
-    led_16.off();
+    LED_16.off();
     HttpResponse::Ok().json("Pin disabled")
 }
