@@ -1,28 +1,22 @@
-use rust_gpiozero::*;
+use std::thread;
+use std::time::Duration;
+
+use rppal::pwm::{Channel, Polarity, Pwm};
 use actix_web::{
     get,
     HttpResponse,
     Responder
 };
-use ctor::ctor;
-use std::sync::{Arc, Mutex};
 
-#[ctor]
-static LED_16: Arc<Mutex<rust_gpiozero::LED>> = Arc::new(Mutex::new(LED::new(16)));
 
 
 #[get("/enable")]
 async fn enable() -> impl Responder {
-    let led_mutex = Arc::clone(&LED_16);
-    let led = led_mutex.lock().unwrap();
-    led.on();
-    HttpResponse::Ok().json("Pin enabled")
-}
+    let pwm = Pwm::with_frequency(Channel::Pwm0, 2.0, 0.25, Polarity::Normal, true).unwrap();
+    
+    thread::sleep(Duration::from_secs(2));
+    pwm.set_frequency(8.0, 0.5).unwrap();
+    thread::sleep(Duration::from_secs(3));
 
-#[get("/disable")]
-async fn disable() -> impl Responder {
-    let led_mutex = Arc::clone(&LED_16);
-    let led = led_mutex.lock().unwrap();
-    led.off();
-    HttpResponse::Ok().json("Pin disabled")
+    HttpResponse::Ok().json("Pin enabled")
 }
