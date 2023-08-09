@@ -25,7 +25,7 @@ use rppal::gpio::Gpio;
 // const GPIO_PWM: u8 = 23;
 const GPIO_LED_13: u8 = 13;
 const GPIO_LED_19: u8 = 19;
-const GPIO_LED_26: u8 = 26;
+const GPIO_LED_16: u8 = 16;
 
 // const PERIOD_MS: u64 = 20;
 // const PULSE_MIN_US: u64 = 1200;
@@ -34,11 +34,11 @@ const GPIO_LED_26: u8 = 26;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // let mut pin = Gpio::new()?.get(GPIO_PWM)?.into_output();
-    let mut pin_26 = Gpio::new()?.get(GPIO_LED_26)?.into_output();
+    let mut pin_16 = Gpio::new()?.get(GPIO_LED_16)?.into_output();
     let mut pin_19 = Gpio::new()?.get(GPIO_LED_19)?.into_output();
     let mut pin_13 = Gpio::new()?.get(GPIO_LED_13)?.into_output();
 
-    pin_26.set_high();
+    pin_16.set_high();
     pin_19.set_high();
     pin_13.set_low();
 
