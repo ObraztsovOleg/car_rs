@@ -23,9 +23,9 @@ use std::time::Duration;
 use rppal::gpio::Gpio;
 
 // const GPIO_PWM: u8 = 23;
-const GPIO_LED_33: u8 = 33;
-const GPIO_LED_35: u8 = 35;
-const GPIO_LED_37: u8 = 37;
+const GPIO_LED_13: u8 = 13;
+const GPIO_LED_19: u8 = 19;
+const GPIO_LED_26: u8 = 26;
 
 // const PERIOD_MS: u64 = 20;
 // const PULSE_MIN_US: u64 = 1200;
@@ -34,13 +34,13 @@ const GPIO_LED_37: u8 = 37;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // let mut pin = Gpio::new()?.get(GPIO_PWM)?.into_output();
-    let mut pin_33 = Gpio::new()?.get(GPIO_LED_33)?.into_output();
-    let mut pin_35 = Gpio::new()?.get(GPIO_LED_35)?.into_output();
-    let mut pin_37 = Gpio::new()?.get(GPIO_LED_37)?.into_output();
+    let mut pin_26 = Gpio::new()?.get(GPIO_LED_26)?.into_output();
+    let mut pin_19 = Gpio::new()?.get(GPIO_LED_19)?.into_output();
+    let mut pin_13 = Gpio::new()?.get(GPIO_LED_13)?.into_output();
 
-    pin_35.set_high();
-    pin_37.set_high();
-    pin_33.set_low();
+    pin_26.set_high();
+    pin_19.set_high();
+    pin_13.set_low();
 
     // pin.set_pwm(
     //     Duration::from_millis(PERIOD_MS),
