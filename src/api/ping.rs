@@ -47,9 +47,9 @@ async fn speeddown(data: web::Data<AppState>) -> impl Responder {
 async fn toogle_polarity(data: web::Data<AppState>) -> impl Responder {
     let mut pin_13 = data.pin_13.lock().unwrap();
     let mut pin_19 = data.pin_19.lock().unwrap();
-    // let pin_16 = data.pin_16.lock().unwrap();
+    let pin_16 = data.pin_16.lock().unwrap();
 
-    // (*pin_16).is_set_low();
+    (*pin_16).is_set_low();
 
     if (*pin_13).is_set_high() && (*pin_19).is_set_low() {
         (*pin_13).set_low();
@@ -59,7 +59,7 @@ async fn toogle_polarity(data: web::Data<AppState>) -> impl Responder {
         (*pin_19).set_low();
     }
 
-    // (*pin_16).is_set_high();
+    (*pin_16).is_set_high();
 
     HttpResponse::Ok().json("Ok")
 }
