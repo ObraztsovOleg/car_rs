@@ -54,7 +54,7 @@ async fn main() -> std::io::Result<()> {
     let state = web::Data::new(AppState {
         pin_13: Mutex::new(output_pin(13)),
         pin_16: Mutex::new(output_pin(16)),
-        pin_19: Mutex::new(output_pin(16)),
+        pin_19: Mutex::new(output_pin(19)),
         pin_pwm0: Mutex::new(pwm0_pin(PERIOD_MS, unsafe { PULSE_US }, Polarity::Normal, true))
 
     });
