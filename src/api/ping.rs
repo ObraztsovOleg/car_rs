@@ -8,7 +8,7 @@ use actix_web::{
 // use std::sync::Mutex;
 // use rppal::gpio::OutputPin;
 
-// use std::time::Duration;
+use std::time::Duration;
 // use std::sync::{Arc, Mutex};
 // use rppal::gpio::{Gpio, OutputPin};
 // use ctor::ctor;
@@ -19,7 +19,6 @@ use actix_web::{
 // const GPIO_LED_16: u8 = 16;
 
 // const PERIOD_MS: u64 = 20;
-
 // static mut PWM0_PULSE: Mutex<u64> = Mutex::new(1200);
 // const PULSE: u64 = 1200;
 // const PULSE_NEUTRAL_US: u64 = 1500;
@@ -92,8 +91,11 @@ use crate::api::AppState;
 async fn enable(data: web::Data<AppState>) -> impl Responder {
     let mut pin_13 = data.pin_13.lock().unwrap();
     let mut pin_16 = data.pin_16.lock().unwrap();
+    let mut pin_19 = data.pin_19.lock().unwrap();
+
     (*pin_13).set_high();
     (*pin_16).set_high();
+    (*pin_19).set_low();
 
     HttpResponse::Ok().json("Pin enabled")
 }
@@ -105,5 +107,18 @@ async fn disable(data: web::Data<AppState>) -> impl Responder {
     (*pin_13).set_low();
     (*pin_16).set_low();
 
-    HttpResponse::Ok().json("Pin enabled")
+    HttpResponse::Ok().json("Pin disabled")
 }
+
+#[get("/speedup")]
+async fn speedup(data: web::Data<AppState>) -> impl Responder {
+    let pin_pwm0 = data.pin_pwm0.lock().unwrap();
+
+    let current_pulse = pin_pwm0.pulse_width().unwrap();
+    let new_pulse = current_pulse.checked_add(Duration::from_micros(500)).unwrap();
+    pin_pwm0.set_pulse_width(new_pulse).unwrap();
+
+    HttpResponse::Ok().json("Pin disabled")
+}
+
+
