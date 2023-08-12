@@ -43,25 +43,30 @@ async fn speeddown(data: web::Data<AppState>) -> impl Responder {
     HttpResponse::Ok().json("Ok")
 }
 
-#[get("/toogle_polarity")]
-async fn toogle_polarity(data: web::Data<AppState>) -> impl Responder {
+#[get("/reverse")]
+async fn reverse(data: web::Data<AppState>) -> impl Responder {
     let mut pin_13 = data.pin_13.lock().unwrap();
+    let mut pin_16 = data.pin_16.lock().unwrap();
     let mut pin_19 = data.pin_19.lock().unwrap();
-    let pin_16 = data.pin_16.lock().unwrap();
 
-    (*pin_16).is_set_low();
-
-    if (*pin_13).is_set_high() && (*pin_19).is_set_low() {
-        (*pin_13).set_low();
-        (*pin_19).set_high();
-    } else if (*pin_13).is_set_low() && (*pin_19).is_set_high() {
-        (*pin_13).set_high();
-        (*pin_19).set_low();
-    }
-
-    (*pin_16).is_set_high();
+    (*pin_13).set_low();
+    (*pin_16).set_high();
+    (*pin_19).set_high();
 
     HttpResponse::Ok().json("Ok")
 }
 
+
+#[get("/stop")]
+async fn stop(data: web::Data<AppState>) -> impl Responder {
+    let mut pin_13 = data.pin_13.lock().unwrap();
+    let mut pin_16 = data.pin_16.lock().unwrap();
+    let mut pin_19 = data.pin_19.lock().unwrap();
+
+    (*pin_13).set_low();
+    (*pin_16).set_low();
+    (*pin_19).set_low();
+
+    HttpResponse::Ok().json("Ok")
+}
 

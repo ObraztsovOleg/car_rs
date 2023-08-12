@@ -7,7 +7,7 @@ use actix_web::{
     HttpServer,
     web
 };
-use api::ping::{enable, speeddown, speedup, toogle_polarity};
+use api::ping::{enable, speeddown, speedup, reverse, stop};
 use crate::api::AppState;
 use std::sync::Mutex;
 use rppal::pwm::{Channel, Polarity, Pwm};
@@ -63,7 +63,8 @@ async fn main() -> std::io::Result<()> {
             .service(enable)
             .service(speeddown)
             .service(speedup)
-            .service(toogle_polarity)
+            .service(reverse)
+            .service(stop)
     })
         .bind(("localhost", 5555))?
         .run()
