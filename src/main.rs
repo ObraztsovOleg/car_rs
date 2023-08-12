@@ -7,7 +7,7 @@ use actix_web::{
     HttpServer,
     web
 };
-use api::ping::enable;
+use api::ping::{enable, disable};
 use crate::api::AppState;
 use std::sync::Mutex;
 
@@ -42,6 +42,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(state.clone())
             .service(enable)
+            .service(disable)
     })
         .bind(("localhost", 5555))?
         .run()

@@ -97,3 +97,13 @@ async fn enable(data: web::Data<AppState>) -> impl Responder {
 
     HttpResponse::Ok().json("Pin enabled")
 }
+
+#[get("/disable")]
+async fn disable(data: web::Data<AppState>) -> impl Responder {
+    let mut pin_13 = data.pin_13.lock().unwrap();
+    let mut pin_16 = data.pin_16.lock().unwrap();
+    (*pin_13).set_low();
+    (*pin_16).set_low();
+
+    HttpResponse::Ok().json("Pin enabled")
+}
