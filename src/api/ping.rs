@@ -4,7 +4,6 @@ use actix_web::{
     Responder,
     web
 };
-use rppal::pwm::Polarity;
 
 use std::time::Duration;
 use crate::api::AppState;
@@ -46,15 +45,16 @@ async fn speeddown(data: web::Data<AppState>) -> impl Responder {
 
 #[get("/toogle_polarity")]
 async fn toogle_polarity(data: web::Data<AppState>) -> impl Responder {
-    let pin_pwm0 = data.pin_pwm0.lock().unwrap();
-    let current_polarity = pin_pwm0.polarity().unwrap();
-    let mut new_polarity = Polarity::Normal;
+    let mut pin_13 = data.pin_13.lock().unwrap();
+    let mut pin_19 = data.pin_19.lock().unwrap();
 
-    if current_polarity == Polarity::Normal {
-        new_polarity = Polarity::Inverse;
+    if (*pin_13).is_set_high() && (*pin_19).is_set_low() {
+        (*pin_13).set_high();
+        (*pin_19).set_low();
+    } else if (*pin_13).is_set_low() && (*pin_19).is_set_high() {
+        (*pin_13).set_low();
+        (*pin_19).set_high();
     }
-
-    pin_pwm0.set_polarity(new_polarity).unwrap();
 
     HttpResponse::Ok().json("Ok")
 }
