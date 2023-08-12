@@ -7,7 +7,7 @@ use actix_web::{
     HttpServer,
     web
 };
-use api::ping::{enable, disable};
+use api::ping::{enable, disable, setperiod, speedup};
 use crate::api::AppState;
 use std::sync::Mutex;
 use rppal::pwm::{Channel, Polarity, Pwm};
@@ -15,7 +15,7 @@ use std::time::Duration;
 use rppal::gpio::{Gpio, OutputPin};
 
 const PERIOD_MS: u64 = 20;
-static mut PULSE_US: u64 = 300;
+static mut PULSE_US: u64 = 700;
 // const PULSE_NEUTRAL_US: u64 = 1500;
 // const PULSE_MAX_US: u64 = 1800;
 
@@ -64,6 +64,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(state.clone())
             .service(enable)
             .service(disable)
+            .service(setperiod)
+            .service(speedup)
     })
         .bind(("localhost", 5555))?
         .run()

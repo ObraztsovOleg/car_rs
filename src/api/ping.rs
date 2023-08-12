@@ -110,7 +110,7 @@ async fn disable(data: web::Data<AppState>) -> impl Responder {
     HttpResponse::Ok().json("Pin disabled")
 }
 
-#[get("/speedup")]
+#[get("/setpulse")]
 async fn speedup(data: web::Data<AppState>) -> impl Responder {
     let pin_pwm0 = data.pin_pwm0.lock().unwrap();
 
@@ -121,15 +121,15 @@ async fn speedup(data: web::Data<AppState>) -> impl Responder {
     HttpResponse::Ok().json("Pin disabled")
 }
 
-// #[get("/change")]
-// async fn speedup(data: web::Data<AppState>) -> impl Responder {
-//     let pin_pwm0 = data.pin_pwm0.lock().unwrap();
+#[get("/setperiod")]
+async fn setperiod(data: web::Data<AppState>) -> impl Responder {
+    let pin_pwm0 = data.pin_pwm0.lock().unwrap();
 
-//     let current_pulse = pin_pwm0.pulse_width().unwrap();
-//     let new_pulse = current_pulse.checked_add(Duration::from_micros(50)).unwrap();
-//     pin_pwm0.set_pulse_width(new_pulse).unwrap();
+    let current_period = pin_pwm0.period().unwrap();
+    let new_period = current_period.checked_sub(Duration::from_micros(2)).unwrap();
+    pin_pwm0.set_pulse_width(new_period).unwrap();
 
-//     HttpResponse::Ok().json("Pin disabled")
-// }
+    HttpResponse::Ok().json("Pin period")
+}
 
 
