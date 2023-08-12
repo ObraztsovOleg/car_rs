@@ -7,7 +7,7 @@ use actix_web::{
     HttpServer,
     web
 };
-use api::ping::{enable, disable, setperiod, speedup};
+use api::ping::{enable, speeddown, speedup, toogle_polarity};
 use crate::api::AppState;
 use std::sync::Mutex;
 use rppal::pwm::{Channel, Polarity, Pwm};
@@ -15,9 +15,7 @@ use std::time::Duration;
 use rppal::gpio::{Gpio, OutputPin};
 
 const PERIOD_MS: u64 = 20;
-static mut PULSE_US: u64 = 700;
-// const PULSE_NEUTRAL_US: u64 = 1500;
-// const PULSE_MAX_US: u64 = 1800;
+static mut PULSE_US: u64 = 1000;
 
 fn output_pin (led: u8) -> OutputPin {
     let gp = match Gpio::new() {
@@ -63,9 +61,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(state.clone())
             .service(enable)
-            .service(disable)
-            .service(setperiod)
+            .service(speeddown)
             .service(speedup)
+            .service(toogle_polarity)
     })
         .bind(("localhost", 5555))?
         .run()
