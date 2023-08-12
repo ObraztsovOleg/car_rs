@@ -5,14 +5,17 @@ mod models;
 use actix_web::{
     App,
     HttpServer,
-    web
+    web,
+    get,
+    HttpResponse,
+    Responder
 };
-use api::ping::enable;
-use server::gpio_mod;
-use std::sync::{Arc, Mutex};
+// use api::ping::enable;
+// use server::gpio_mod;
+use std::sync::Mutex;
 
 
-use std::time::Duration;
+// use std::time::Duration;
 use rppal::gpio::{Gpio, OutputPin};
 
 
@@ -33,6 +36,17 @@ pub struct AppState {
     pin_13: Mutex<OutputPin>,
     pin_16: Mutex<OutputPin>,   
 }
+
+#[get("/enable")]
+async fn enable(data: web::Data<AppState>) -> impl Responder {
+    let mut pin_13 = data.pin_13.lock().unwrap();
+    let mut pin_16 = data.pin_16.lock().unwrap();
+    (*pin_13).set_high();
+    (*pin_16).set_high();
+
+    HttpResponse::Ok().json("Pin enabled")
+}
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

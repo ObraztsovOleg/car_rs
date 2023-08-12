@@ -1,12 +1,12 @@
-use actix_web::{
-    get,
-    HttpResponse,
-    Responder,
-    web
-};
+// use actix_web::{
+//     get,
+//     HttpResponse,
+//     Responder,
+//     web
+// };
 // use super::super::gpio_mod;
-use std::sync::Mutex;
-use rppal::gpio::OutputPin;
+// use std::sync::Mutex;
+// use rppal::gpio::OutputPin;
 
 // use std::time::Duration;
 // use std::sync::{Arc, Mutex};
@@ -81,17 +81,17 @@ use rppal::gpio::OutputPin;
 //     static mut PIN_16: OutputPin = GpioPin::output_pin(GPIO_LED_16);
 // #[ctor] static PIN_19: OutputPin = GpioPin::output_pin(GPIO_LED_19);
 // #[ctor] static PIN_13: OutputPin = GpioPin::output_pin(GPIO_LED_13);
-pub struct AppState {
-    pin_13: Mutex<OutputPin>,
-    pin_16: Mutex<OutputPin>,   
-}
+// pub struct AppState {
+//     pin_13: Mutex<OutputPin>,
+//     pin_16: Mutex<OutputPin>,   
+// }
 
-#[get("/enable")]
-async fn enable(data: web::Data<AppState>) -> impl Responder {
-    let mut pin_13 = data.pin_13.lock().unwrap();
-    let mut pin_16 = data.pin_16.lock().unwrap();
-    (*pin_13).set_high();
-    (*pin_16).set_high();
+// #[get("/enable")]
+// async fn enable(data: web::Data<AppState>) -> impl Responder {
+//     let mut pin_13 = data.pin_13.lock().unwrap();
+//     let mut pin_16 = data.pin_16.lock().unwrap();
+//     (*pin_13).set_high();
+//     (*pin_16).set_high();
 
-    HttpResponse::Ok().json("Pin enabled")
-}
+//     HttpResponse::Ok().json("Pin enabled")
+// }
