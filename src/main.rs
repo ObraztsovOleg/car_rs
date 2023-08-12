@@ -15,7 +15,7 @@ use std::time::Duration;
 use rppal::gpio::{Gpio, OutputPin};
 
 const PERIOD_MS: u64 = 20;
-static mut PULSE_US: u64 = 1200;
+static mut PULSE_US: u64 = 300;
 // const PULSE_NEUTRAL_US: u64 = 1500;
 // const PULSE_MAX_US: u64 = 1800;
 

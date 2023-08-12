@@ -115,10 +115,21 @@ async fn speedup(data: web::Data<AppState>) -> impl Responder {
     let pin_pwm0 = data.pin_pwm0.lock().unwrap();
 
     let current_pulse = pin_pwm0.pulse_width().unwrap();
-    let new_pulse = current_pulse.checked_add(Duration::from_micros(500)).unwrap();
+    let new_pulse = current_pulse.checked_add(Duration::from_micros(50)).unwrap();
     pin_pwm0.set_pulse_width(new_pulse).unwrap();
 
     HttpResponse::Ok().json("Pin disabled")
 }
+
+// #[get("/change")]
+// async fn speedup(data: web::Data<AppState>) -> impl Responder {
+//     let pin_pwm0 = data.pin_pwm0.lock().unwrap();
+
+//     let current_pulse = pin_pwm0.pulse_width().unwrap();
+//     let new_pulse = current_pulse.checked_add(Duration::from_micros(50)).unwrap();
+//     pin_pwm0.set_pulse_width(new_pulse).unwrap();
+
+//     HttpResponse::Ok().json("Pin disabled")
+// }
 
 
