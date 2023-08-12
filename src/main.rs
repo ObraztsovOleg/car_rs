@@ -5,13 +5,10 @@ mod models;
 use actix_web::{
     App,
     HttpServer,
-    web,
-    get,
-    HttpResponse,
-    Responder
+    web
 };
-// use api::ping::enable;
-// use server::gpio_mod;
+use api::ping::enable;
+use crate::api::AppState;
 use std::sync::Mutex;
 
 
@@ -30,21 +27,6 @@ fn output_pin (led: u8) -> OutputPin {
     };
 
     res.into_output()
-}
-
-pub struct AppState {
-    pin_13: Mutex<OutputPin>,
-    pin_16: Mutex<OutputPin>,   
-}
-
-#[get("/enable")]
-async fn enable(data: web::Data<AppState>) -> impl Responder {
-    let mut pin_13 = data.pin_13.lock().unwrap();
-    let mut pin_16 = data.pin_16.lock().unwrap();
-    (*pin_13).set_high();
-    (*pin_16).set_high();
-
-    HttpResponse::Ok().json("Pin enabled")
 }
 
 

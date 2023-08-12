@@ -1,10 +1,10 @@
-// use actix_web::{
-//     get,
-//     HttpResponse,
-//     Responder,
-//     web
-// };
-// use super::super::gpio_mod;
+use actix_web::{
+    get,
+    HttpResponse,
+    Responder,
+    web
+};
+
 // use std::sync::Mutex;
 // use rppal::gpio::OutputPin;
 
@@ -86,12 +86,14 @@
 //     pin_16: Mutex<OutputPin>,   
 // }
 
-// #[get("/enable")]
-// async fn enable(data: web::Data<AppState>) -> impl Responder {
-//     let mut pin_13 = data.pin_13.lock().unwrap();
-//     let mut pin_16 = data.pin_16.lock().unwrap();
-//     (*pin_13).set_high();
-//     (*pin_16).set_high();
+use crate::api::AppState;
 
-//     HttpResponse::Ok().json("Pin enabled")
-// }
+#[get("/enable")]
+async fn enable(data: web::Data<AppState>) -> impl Responder {
+    let mut pin_13 = data.pin_13.lock().unwrap();
+    let mut pin_16 = data.pin_16.lock().unwrap();
+    (*pin_13).set_high();
+    (*pin_16).set_high();
+
+    HttpResponse::Ok().json("Pin enabled")
+}
