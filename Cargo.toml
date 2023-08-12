@@ -10,3 +10,4 @@ dotenv = "0.15.0"
 futures = "0.3"
 rppal = { version = "0.14.1", features = ["hal"] }
 ctor = "0.2.4"
+lazy_static = "1.4.0"
