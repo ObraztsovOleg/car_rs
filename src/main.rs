@@ -1,66 +1,43 @@
 mod api;
-mod repository;
-mod models;
+use crate::api::models::gpio::gpio_model::*;
+use crate::api::models::pwm::pwm_model::*;
 
 use actix_web::{
-    App,
-    HttpServer,
-    web
+    App, HttpServer, web
 };
-use api::ping::{enable, speeddown, speedup, reverse, stop};
-use crate::api::AppState;
+use api::controller::gpio::{
+    start, reverse, stop
+};
+use api::controller::pwm::{
+    speeddown, speedup
+};
 use std::sync::Mutex;
-use rppal::pwm::{Channel, Polarity, Pwm};
-use std::time::Duration;
-use rppal::gpio::{Gpio, OutputPin};
 
 const PERIOD_MS: u64 = 20;
-static mut PULSE_US: u64 = 1000;
-
-fn output_pin (led: u8) -> OutputPin {
-    let gp = match Gpio::new() {
-        Ok(val) => val,
-        Err(e) => panic!("{}", e)
-    };
-    let res = match gp.get(led) {
-        Ok(val) => val,
-        Err(e) => panic!("{}", e)
-    };
-
-    res.into_output()
-}
-
-fn pwm0_pin (period_ms: u64, pulse_us: u64, 
-            polarity: Polarity, enable_pin: bool) -> Pwm {
-
-    return match Pwm::with_period(
-            Channel::Pwm0,
-            Duration::from_millis(period_ms),
-            Duration::from_micros(pulse_us),
-            polarity,
-            enable_pin,
-        ) {
-            Ok(val) => val,
-            Err(e) => panic!("{}", e)
-        }
-}
+const PULSE_US: u64 = 1000;
+const PIN_13: u8 = 13;
+const PIN_16: u8 = 16;
+const PIN_19: u8 = 19;
 
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
-    let state = web::Data::new(AppState {
-        pin_13: Mutex::new(output_pin(13)),
-        pin_16: Mutex::new(output_pin(16)),
-        pin_19: Mutex::new(output_pin(19)),
-        pin_pwm0: Mutex::new(pwm0_pin(PERIOD_MS, unsafe { PULSE_US }, Polarity::Normal, true))
+    let gpio_state = web::Data::new(AppGpioState {
+        pin_13: Mutex::new(output_pin(PIN_13)),
+        pin_16: Mutex::new(output_pin(PIN_16)),
+        pin_19: Mutex::new(output_pin(PIN_19))
+    });
 
+    let pwm_state = web::Data::new(AppPwmState {
+        pin_pwm0: Mutex::new(pwm0_pin(PERIOD_MS, PULSE_US))
     });
 
     HttpServer::new(move || {
         App::new()
-            .app_data(state.clone())
-            .service(enable)
+            .app_data(gpio_state.clone())
+            .app_data(pwm_state.clone())
+            .service(start)
             .service(speeddown)
             .service(speedup)
             .service(reverse)
