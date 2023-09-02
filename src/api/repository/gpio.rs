@@ -3,6 +3,8 @@ pub mod gpio_repository {
     use crate::api::models::gpio::gpio_model::GPIO_STATE;
     use crate::api::models::globals::pwm;
     use crate::api::models::globals::gpio;
+    use std::time::Duration;
+    use std::thread;
 
     static mut INTERRUPT: bool = false; 
 
@@ -50,11 +52,13 @@ pub mod gpio_repository {
 
         if left {
             while pulse <= pwm::SERVO_MAX_PULSE && !INTERRUPT {
-                pulse = update_pulse(pwm::PIN_13, 20);
+                pulse = update_pulse(pwm::PIN_13, 5);
+                thread::sleep(Duration::from_millis(20));
             }
         } else {
             while pulse >= pwm::SERVO_MIN_PULSE && !INTERRUPT {
-                pulse = update_pulse(pwm::PIN_13, -20);
+                pulse = update_pulse(pwm::PIN_13, -5);
+                thread::sleep(Duration::from_millis(20));
             }
         }
         
