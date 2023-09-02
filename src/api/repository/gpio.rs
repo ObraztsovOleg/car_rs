@@ -45,16 +45,16 @@ pub mod gpio_repository {
     pub unsafe fn set_interrupt() { INTERRUPT = true; }
 
     pub unsafe fn set_turnside (left: bool) {
-        let pulse = pwm::SERVO_AVG_PULSE;
+        let mut pulse = pwm::SERVO_AVG_PULSE;
         INTERRUPT = false;
 
         if left {
             while pulse <= pwm::SERVO_MAX_PULSE && !INTERRUPT {
-                update_pulse(pwm::PIN_13, 5);
+                pulse = update_pulse(pwm::PIN_13, 5);
             }
         } else {
             while pulse >= pwm::SERVO_MIN_PULSE && !INTERRUPT {
-                update_pulse(pwm::PIN_13, -5);
+                pulse = update_pulse(pwm::PIN_13, -5);
             }
         }
         
