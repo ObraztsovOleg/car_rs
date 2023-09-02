@@ -42,9 +42,9 @@ pub mod gpio_repository {
 
     pub unsafe fn set_turnside (left: bool) {
         if left {
-            update_pulse(pwm::PIN_13, 1200);
+            update_pulse(pwm::PIN_13,100);
         } else {
-            update_pulse(pwm::PIN_13, 1800);
+            update_pulse(pwm::PIN_13, -100);
         }
         
     }
