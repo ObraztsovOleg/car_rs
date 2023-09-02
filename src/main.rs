@@ -26,7 +26,7 @@ fn bit_handler(bytes: MutexGuard<'_, Vec<u8>>) {
     unsafe {
         match bytes.first() {
             Some(&TURN_LEFT) => set_turnside(true),
-            Some(&TURN_RIGHT) => set_turnside(true),
+            Some(&TURN_RIGHT) => set_turnside(false),
             Some(&MOVE_FORWARD) =>  set_start(true),
             Some(&MOVE_BACKWARD) => set_start(false),
             Some(&STOP) => set_stop(),
