@@ -2,7 +2,7 @@ mod api;
 use crate::api::models::globals::commands::*;
 use crate::api::repository::gpio::gpio_repository::{
     set_start, set_interrupt,
-    set_turnside, set_stop
+    set_turnside, set_stop, set_execution
 };
 
 use axum::{
@@ -29,8 +29,8 @@ fn bit_handler(byte: Arc<Vec<u8>>) {
             Some(&TURN_RIGHT) => set_turnside(false),
             Some(&MOVE_FORWARD) =>  set_start(true),
             Some(&MOVE_BACKWARD) => set_start(false),
-            Some(&STOP) => set_stop(),
             Some(&STOP_INTERRUPT) => set_interrupt(),
+            Some(&STOP) => set_stop(),
 
             _ => tracing::info!("Sent unknown command")
         }
@@ -46,7 +46,6 @@ async fn main () {
     tracing::info!("WebSocket started");
 
     let app = Router::new()
-        .route("/ping", get(ping))
         .route("/websocket", get(ws_handler))
         .layer(
             TraceLayer::new_for_http()
@@ -67,18 +66,26 @@ async fn ws_handler (
     ws.on_upgrade(move |socket| handle_connection(socket))
 }
 
-async fn ping () {
-    println!("hello");
-}
-
 async fn handle_connection (mut socket: WebSocket) {
     while let Some(msg) = socket.recv().await {
         if let Ok(msg) = msg {
             if process_message (msg).is_break() {
+                unsafe { set_execution() };
+                return;
+            }
+
+            if socket
+                .send(Message::Binary(vec![0x00]))
+                .await
+                .is_err()
+            {
+                println!("client abruptly disconnected");
+                unsafe { set_execution() };
                 return;
             }
         } else {
             tracing::info!("Client abruptly disconnected");
+            unsafe { set_execution() };
             return;
         }
     }
@@ -101,6 +108,8 @@ fn process_message (msg: Message) -> ControlFlow<(), ()> {
             } else {
                 tracing::info!("Sent close message without CloseFrame");
             }
+
+            unsafe { set_execution() };
             return ControlFlow::Break(());
         }
         _ => {

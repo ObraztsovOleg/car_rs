@@ -75,4 +75,9 @@ pub mod gpio_repository {
         }
         
     }
+
+    pub unsafe fn set_execution () {
+        set_interrupt();
+        set_stop();
+    }
 }
