@@ -11,10 +11,14 @@ pub mod gpio_repository {
 
         if forward {
             pwm_12.enable().unwrap();
-            pwm_13.disable().unwrap();
-        } else {
-            pwm_12.disable().unwrap();
             pwm_13.enable().unwrap();
+            pwm_12.set_duty_cycle(0.3).unwrap();
+            pwm_13.set_duty_cycle(1.0).unwrap();
+        } else {
+            pwm_13.enable().unwrap();
+            pwm_12.enable().unwrap();
+            pwm_13.set_duty_cycle(0.3).unwrap();
+            pwm_12.set_duty_cycle(1.0).unwrap();
         }
     }
 
