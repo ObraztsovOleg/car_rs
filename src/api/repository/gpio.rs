@@ -20,7 +20,7 @@ pub mod gpio_repository {
             pwm_18.set_duty_cycle(0.5).unwrap();
         } else {
             gpio_27.set_high();
-            gpio_27.set_low();
+            gpio_22.set_low();
             pwm_18.enable().unwrap();
             pwm_18.set_duty_cycle(0.5).unwrap();
         }
