@@ -31,7 +31,7 @@ pub mod pwm_model {
             (pwm::PIN_18, Mutex::new(
                 pwm_pin(Channel::Pwm0, pwm::PERIOD, pwm::PULSE, false)
             )),
-            (pwm::PIN_19, Mutex::new(
+            (pwm::PIN_13, Mutex::new(
                 pwm_pin(Channel::Pwm1, pwm::PERIOD, pwm::SERVO_PULSE, true)
             )),
         ])

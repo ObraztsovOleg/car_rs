@@ -5,7 +5,7 @@ pub mod gpio {
 
 pub mod pwm {
     pub const PIN_18: u8 = 18;
-    pub const PIN_19: u8 = 19;
+    pub const PIN_13: u8 = 13;
 
     pub const PERIOD: u64 = 10;
     pub const PULSE: u64 = 1000;
