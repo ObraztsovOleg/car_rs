@@ -26,8 +26,8 @@ pub mod pwm_model {
     pub static mut PWM_STATE: Lazy<HashMap<u8, Mutex<Pwm>>> = Lazy::new(||
         HashMap::from([
             (pwm::PIN_12, Mutex::new(pwm_pin(Channel::Pwm0, pwm::PERIOD, pwm::PULSE))),
-            (pwm::PIN_13, Mutex::new(pwm_pin(Channel::Pwm0, pwm::PERIOD, pwm::PULSE))),
-            (pwm::PIN_18, Mutex::new(pwm_pin(Channel::Pwm1, pwm::PERIOD, pwm::PULSE))),
+            (pwm::PIN_13, Mutex::new(pwm_pin(Channel::Pwm1, pwm::PERIOD, pwm::PULSE))),
+            (pwm::PIN_18, Mutex::new(pwm_pin(Channel::Pwm0, pwm::PERIOD, pwm::PULSE))),
             (pwm::PIN_19, Mutex::new(pwm_pin(Channel::Pwm1, pwm::PERIOD, pwm::PULSE))),
         ])
     );
