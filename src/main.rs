@@ -18,13 +18,13 @@ use std::{
     ops::ControlFlow
 };
 
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::Arc;
 use std::thread;
 
-fn bit_handler(bytes: MutexGuard<'_, Vec<u8>>) {
-    println!("{:?}", bytes);
+fn bit_handler(byte: Arc<Vec<u8>>) {
+    println!("{:?}", byte);
     unsafe {
-        match bytes.first() {
+        match byte.first() {
             Some(&TURN_LEFT) => set_turnside(true),
             Some(&TURN_RIGHT) => set_turnside(false),
             Some(&MOVE_FORWARD) =>  set_start(true),
@@ -87,10 +87,10 @@ async fn handle_connection (mut socket: WebSocket) {
 fn process_message (msg: Message) -> ControlFlow<(), ()> {
     match msg {
         Message::Binary(array) => {
-            let bytes = Arc::new(Mutex::new(array));
+            let bytes = Arc::new(array);
             let bytes = Arc::clone(&bytes);
 
-            thread::spawn(move || bit_handler(bytes.lock().unwrap()));
+            thread::spawn(move || bit_handler(bytes));
         }
         Message::Close(c) => {
             if let Some(cf) = c {
