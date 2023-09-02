@@ -19,6 +19,15 @@ pub mod pwm_model {
         }
     }
 
+    pub unsafe fn update_pulse (pin_number: u8, pulse_us: i64) {
+        let pin = PWM_STATE.get_mut(&pin_number).unwrap();
+        let pwm_pin = pin.lock().unwrap();
+
+        let pulse_duration = pwm_pin.pulse_width().unwrap();
+        let current_pulse = pulse_duration.as_micros() - (pulse_us as u128);
+        
+        pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
+    }
 
     pub static mut PWM_STATE: Lazy<HashMap<u8, Mutex<Pwm>>> = Lazy::new(||
         HashMap::from([
