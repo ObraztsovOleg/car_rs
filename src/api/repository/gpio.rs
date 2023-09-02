@@ -53,8 +53,6 @@ pub mod gpio_repository {
 
         let pulse_duration = pwm_pin.pulse_width().unwrap();
         let mut current_pulse = pulse_duration.as_micros() as u64;
-
-        let pulse = pwm::SERVO_AVG_PULSE;
         INTERRUPT = false;
 
         if left {
@@ -64,7 +62,7 @@ pub mod gpio_repository {
                 thread::sleep(Duration::from_millis(20));
             }
         } else {
-            while pulse >= pwm::SERVO_MIN_PULSE && !INTERRUPT {
+            while current_pulse >= pwm::SERVO_MIN_PULSE && !INTERRUPT {
                 current_pulse -= 50;
                 pwm_pin.set_pulse_width(Duration::from_micros(current_pulse)).unwrap();
                 thread::sleep(Duration::from_millis(20));
