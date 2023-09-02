@@ -20,8 +20,6 @@ pub mod gpio_model {
 
     pub static mut GPIO_STATE: Lazy<HashMap<u8, Mutex<OutputPin>>> = Lazy::new(||
         HashMap::from([
-            (gpio::PIN_16, Mutex::new(output_pin(gpio::PIN_16))),
-            (gpio::PIN_17, Mutex::new(output_pin(gpio::PIN_17))),
             (gpio::PIN_22, Mutex::new(output_pin(gpio::PIN_22))),
             (gpio::PIN_27, Mutex::new(output_pin(gpio::PIN_27))),
         ])

@@ -4,7 +4,7 @@ pub mod gpio_repository {
     use crate::api::models::globals::pwm;
     use crate::api::models::globals::gpio;
 
-    pub unsafe fn enable_move (forward: bool) {
+    pub unsafe fn set_start (forward: bool) {
         let pin_18 = PWM_STATE.get_mut(&pwm::PIN_18).unwrap();
         let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
         let pin_27 = GPIO_STATE.get_mut(&gpio::PIN_27).unwrap();
@@ -26,31 +26,26 @@ pub mod gpio_repository {
         }
     }
 
-    pub unsafe fn set_pulse (pulse_us: u64) {
-        let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
-        let pin_13 = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
+    pub unsafe fn set_stop () {
+        let pin_18 = PWM_STATE.get_mut(&pwm::PIN_18).unwrap();
+        let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
+        let pin_27 = GPIO_STATE.get_mut(&gpio::PIN_27).unwrap();
 
-        update_pulse(pin_12.lock().unwrap(), pulse_us);
-        update_pulse(pin_13.lock().unwrap(), pulse_us);
+        let mut gpio_22 = pin_22.lock().unwrap();
+        let mut gpio_27 = pin_27.lock().unwrap();
+        let pwm_18 = pin_18.lock().unwrap();
+
+        pwm_18.disable().unwrap();
+        gpio_22.set_low();
+        gpio_27.set_low();
     }
 
-    // pub fn enable_motor_b (data: &web::Data<AppGpioState>) {
-
-    // }
-
-    // pub fn reverse_motor_a (data: &web::Data<AppGpioState>) {
-
-    // }
-
-    // pub fn reverse_motor_b (data: &web::Data<AppGpioState>) {
-
-    // }
-
-    // pub fn disable_motor_a (data: &web::Data<AppGpioState>) {
+    pub unsafe fn set_turnside (left: bool) {
+        if left {
+            update_pulse(pwm::PIN_19, 1000);
+        } else {
+            update_pulse(pwm::PIN_19, 2000);
+        }
         
-    // }
-
-    // pub fn disable_motor_b (data: &web::Data<AppGpioState>) {
-
-    // }
+    }
 }

@@ -1,8 +1,8 @@
 mod api;
 use crate::api::models::globals::commands::*;
 use crate::api::repository::gpio::gpio_repository::{
-    enable_move,
-    set_pulse
+    set_start,
+    set_turnside, set_stop
 };
 
 use axum::{
@@ -23,11 +23,16 @@ use std::thread;
 
 fn bit_handler(bytes: MutexGuard<'_, Vec<u8>>) {
     println!("{:?}", bytes);
-    match bytes.first() {
-        Some(&ROTATE) => println!("rotate {:?}", *bytes),
-        Some(&MOVE_FORWARD) => unsafe { enable_move(true) },
-        Some(&MOVE_BACKWARD) => unsafe { enable_move(false) },
-        _ => tracing::info!("Sent unknown command")
+    unsafe {
+        match bytes.first() {
+            Some(&TURN_LEFT) => set_turnside(true),
+            Some(&TURN_RIGHT) => set_turnside(true),
+            Some(&MOVE_FORWARD) =>  set_start(true),
+            Some(&MOVE_BACKWARD) => set_start(false),
+            Some(&STOP) => set_stop(),
+
+            _ => tracing::info!("Sent unknown command")
+        }
     }
 }
   
