@@ -1,8 +1,12 @@
 pub mod gpio_repository {
-    use crate::api::models::pwm::pwm_model::{PWM_STATE, update_pulse};
+    use crate::api::models::pwm::pwm_model::PWM_STATE;
     use crate::api::models::gpio::gpio_model::GPIO_STATE;
     use crate::api::models::globals::pwm;
     use crate::api::models::globals::gpio;
+    use std::time::Duration;
+    use std::thread;
+
+    static mut INTERRUPT: bool = false;
 
     pub unsafe fn set_start (forward: bool) {
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
@@ -40,11 +44,27 @@ pub mod gpio_repository {
         gpio_27.set_low();
     }
 
+    pub unsafe fn set_interrupt() { INTERRUPT = true; }
+
     pub unsafe fn set_turnside (left: bool) {
+        let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
+        let pwm_pin = pin.lock().unwrap();
+
+        let pulse_duration = pwm_pin.pulse_width().unwrap();
+        let mut current_pulse = pulse_duration.as_micros() as u64;
+        
         if left {
-            update_pulse(pwm::PIN_13,100);
+            while !INTERRUPT && current_pulse <= pwm::SERVO_MAX_PULSE {
+                current_pulse += 50;
+                pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
+                thread::sleep(Duration::from_millis(20));
+            }
         } else {
-            update_pulse(pwm::PIN_13, -100);
+            while !INTERRUPT && current_pulse >= pwm::SERVO_MIN_PULSE {
+                current_pulse -= 50;
+                pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
+                thread::sleep(Duration::from_millis(20));
+            }
         }
         
     }
