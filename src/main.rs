@@ -22,6 +22,7 @@ use std::sync::{Arc, Mutex, MutexGuard};
 use std::thread;
 
 fn bit_handler(bytes: MutexGuard<'_, Vec<u8>>) {
+    println!("{:?}", bytes);
     match bytes.first() {
         Some(&ROTATE) => println!("rotate {:?}", *bytes),
         Some(&MOVE_FORWARD) => unsafe { enable_move(true) },
