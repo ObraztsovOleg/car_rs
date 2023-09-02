@@ -52,13 +52,13 @@ pub mod gpio_repository {
 
         if left {
             while pulse <= pwm::SERVO_MAX_PULSE && !INTERRUPT {
-                pulse = update_pulse(pwm::PIN_13, 5);
+                pulse = update_pulse(pwm::PIN_13, 50);
                 thread::sleep(Duration::from_millis(20));
             }
         } else {
             while pulse >= pwm::SERVO_MIN_PULSE && !INTERRUPT {
-                pulse = update_pulse(pwm::PIN_13, -5);
-                thread::sleep(Duration::from_millis(20));
+                pulse = update_pulse(pwm::PIN_13, -50);
+                thread::sleep(Duration::from_millis(200));
             }
         }
         
