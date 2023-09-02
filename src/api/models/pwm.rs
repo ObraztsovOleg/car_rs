@@ -24,7 +24,7 @@ pub mod pwm_model {
         let pwm_pin = pin.lock().unwrap();
 
         let pulse_duration = pwm_pin.pulse_width().unwrap();
-        let current_pulse = pulse_duration.as_micros() - (pulse_us as u128);
+        let current_pulse = pulse_duration.as_micros() as i64 + pulse_us;
         
         pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
     }
