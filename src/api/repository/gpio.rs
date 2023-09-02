@@ -1,24 +1,28 @@
 pub mod gpio_repository {
     use crate::api::models::pwm::pwm_model::{PWM_STATE, update_pulse};
+    use crate::api::models::gpio::gpio_model::GPIO_STATE;
     use crate::api::models::globals::pwm;
+    use crate::api::models::globals::gpio;
 
     pub unsafe fn enable_move (forward: bool) {
-        let pin_19 = PWM_STATE.get_mut(&pwm::PIN_19).unwrap();
         let pin_18 = PWM_STATE.get_mut(&pwm::PIN_18).unwrap();
-    
-        let pwm_19 = pin_19.lock().unwrap();
+        let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
+        let pin_27 = GPIO_STATE.get_mut(&gpio::PIN_27).unwrap();
+
+        let mut gpio_22 = pin_22.lock().unwrap();
+        let mut gpio_27 = pin_27.lock().unwrap();
         let pwm_18 = pin_18.lock().unwrap();
 
         if forward {
-            pwm_19.enable().unwrap();
+            gpio_22.set_high();
+            gpio_27.set_low();
             pwm_18.enable().unwrap();
-            pwm_19.set_duty_cycle(0.3).unwrap();
-            pwm_18.set_duty_cycle(1.0).unwrap();
+            pwm_18.set_duty_cycle(0.5).unwrap();
         } else {
+            gpio_27.set_high();
+            gpio_27.set_low();
             pwm_18.enable().unwrap();
-            pwm_19.enable().unwrap();
-            pwm_18.set_duty_cycle(0.3).unwrap();
-            pwm_19.set_duty_cycle(1.0).unwrap();
+            pwm_18.set_duty_cycle(0.5).unwrap();
         }
     }
 
