@@ -4,7 +4,7 @@ pub mod gpio_repository {
 
     pub unsafe fn enable_move (forward: bool) {
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
-        let pin_18 = PWM_STATE.get_mut(&pwm::PIN_18).unwrap();
+        let pin_18 = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
     
         let pwm_12 = pin_12.lock().unwrap();
         let pwm_18 = pin_18.lock().unwrap();
@@ -12,12 +12,12 @@ pub mod gpio_repository {
         if forward {
             pwm_12.enable().unwrap();
             pwm_18.enable().unwrap();
-            pwm_12.set_duty_cycle(0.2).unwrap();
+            pwm_12.set_duty_cycle(0.3).unwrap();
             pwm_18.set_duty_cycle(1.0).unwrap();
         } else {
             pwm_18.enable().unwrap();
             pwm_12.enable().unwrap();
-            pwm_18.set_duty_cycle(0.2).unwrap();
+            pwm_18.set_duty_cycle(0.3).unwrap();
             pwm_12.set_duty_cycle(1.0).unwrap();
         }
     }
