@@ -39,7 +39,7 @@ async fn main () {
     tracing::info!("WebSocket started");
 
     let app = Router::new()
-        .route("/", get(println!("hello")))
+        .route("/ping", get(ping))
         .route("/websocket", get(ws_handler))
         .layer(
             TraceLayer::new_for_http()
@@ -58,6 +58,10 @@ async fn ws_handler (
     ws: WebSocketUpgrade
 ) -> impl IntoResponse {
     ws.on_upgrade(move |socket| handle_connection(socket))
+}
+
+async fn ping () {
+    println!("hello");
 }
 
 async fn handle_connection (mut socket: WebSocket) {
