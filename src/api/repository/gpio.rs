@@ -47,6 +47,7 @@ pub mod gpio_repository {
     pub unsafe fn set_interrupt() { INTERRUPT = true; }
 
     pub unsafe fn set_turnside (left: bool) {
+        INTERRUPT = false;
         let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
         let pwm_pin = pin.lock().unwrap();
 
@@ -55,13 +56,13 @@ pub mod gpio_repository {
         
         if left {
             while !INTERRUPT && current_pulse <= pwm::SERVO_MAX_PULSE {
-                current_pulse += 5;
+                current_pulse += 10;
                 pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
                 thread::sleep(Duration::from_millis(20));
             }
         } else {
             while !INTERRUPT && current_pulse >= pwm::SERVO_MIN_PULSE {
-                current_pulse -= 5;
+                current_pulse -= 10;
                 pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
                 thread::sleep(Duration::from_millis(20));
             }
