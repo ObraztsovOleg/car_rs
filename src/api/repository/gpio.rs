@@ -42,9 +42,13 @@ pub mod gpio_repository {
 
     pub unsafe fn set_turnside (left: bool) {
         if left {
-            update_pulse(pwm::PIN_13,100);
+            for mut pulse in pwm::SERVO_AVG_PULSE..=pwm::SERVO_MAX_PULSE {
+                pulse = update_pulse(pwm::PIN_13,100);
+            }
         } else {
-            update_pulse(pwm::PIN_13, -100);
+            for mut pulse in pwm::SERVO_AVG_PULSE..=pwm::SERVO_MIN_PULSE {
+                pulse = update_pulse(pwm::PIN_13,-100);
+            }
         }
         
     }

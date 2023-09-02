@@ -9,7 +9,10 @@ pub mod pwm {
 
     pub const PERIOD: u64 = 10;
     pub const PULSE: u64 = 1000;
-    pub const SERVO_PULSE: u64 = 1500;
+    pub const SERVO_AVG_PULSE: u64 = 1500;
+    pub const SERVO_MIN_PULSE: u64 = 400;
+    pub const SERVO_MAX_PULSE: u64 = 2600;
+
 }
 
 pub mod commands {
