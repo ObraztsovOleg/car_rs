@@ -6,11 +6,11 @@ pub mod pwm_model {
     use std::collections::HashMap;
     use crate::api::models::globals::pwm;
 
-    pub fn pwm_pin (channel: Channel, frequency: f64, duty_cycle: f64) -> Pwm {
-        return match Pwm::with_frequency (
+    pub fn pwm_pin (channel: Channel, period_ms: u64, pulse_us: u64) -> Pwm {
+        return match Pwm::with_period (
             channel,
-            frequency,
-            duty_cycle,
+            Duration::from_millis(period_ms),
+            Duration::from_micros(pulse_us),
             Polarity::Normal,
             false,
         ) {
@@ -25,10 +25,10 @@ pub mod pwm_model {
 
     pub static mut PWM_STATE: Lazy<HashMap<u8, Mutex<Pwm>>> = Lazy::new(||
         HashMap::from([
-            (pwm::PIN_12, Mutex::new(pwm_pin(Channel::Pwm0, pwm::FREQUENCY, pwm::DUTY_CYCLE))),
-            (pwm::PIN_13, Mutex::new(pwm_pin(Channel::Pwm1, pwm::FREQUENCY, pwm::DUTY_CYCLE))),
-            (pwm::PIN_18, Mutex::new(pwm_pin(Channel::Pwm0, pwm::FREQUENCY, pwm::DUTY_CYCLE))),
-            (pwm::PIN_19, Mutex::new(pwm_pin(Channel::Pwm1, pwm::FREQUENCY, pwm::DUTY_CYCLE))),
+            (pwm::PIN_12, Mutex::new(pwm_pin(Channel::Pwm0, pwm::PERIOD, pwm::PULSE))),
+            (pwm::PIN_13, Mutex::new(pwm_pin(Channel::Pwm1, pwm::PERIOD, pwm::PULSE))),
+            (pwm::PIN_18, Mutex::new(pwm_pin(Channel::Pwm0, pwm::PERIOD, pwm::PULSE))),
+            (pwm::PIN_19, Mutex::new(pwm_pin(Channel::Pwm1, pwm::PERIOD, pwm::PULSE))),
         ])
     );
 }

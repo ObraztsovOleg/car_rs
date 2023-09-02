@@ -11,8 +11,8 @@ pub mod pwm {
     pub const PIN_18: u8 = 18;
     pub const PIN_19: u8 = 19;
 
-    pub const FREQUENCY: f64 = 2.0;
-    pub const DUTY_CYCLE: f64 = 0.25;
+    pub const PERIOD: u64 = 10;
+    pub const PULSE: u64 = 1000;
 }
 
 pub mod commands {
