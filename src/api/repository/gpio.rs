@@ -1,45 +1,46 @@
 pub mod gpio_repository {
-    use actix_web::web;
-    use crate::AppGpioState;
+    use crate::api::models::pwm::pwm_model::{PWM_STATE, update_pulse};
+    use crate::api::models::globals::pwm;
 
-    pub fn enable_motor_a (data: &web::Data<AppGpioState>) {
-        let mut pin_13 = data.pin_13.lock().unwrap();
-        let mut pin_16 = data.pin_16.lock().unwrap();
-        let mut pin_19 = data.pin_19.lock().unwrap();
+    pub unsafe fn enable_move (forward: bool) {
+        let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
+        let pin_13 = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
     
-        (*pin_13).set_high();
-        (*pin_16).set_high();
-        (*pin_19).set_low();    
+        let pwm_12 = pin_12.lock().unwrap();
+        let pwm_13 = pin_13.lock().unwrap();
+
+        if forward {
+            pwm_12.enable().unwrap();
+            pwm_13.disable().unwrap();
+        } else {
+            pwm_12.disable().unwrap();
+            pwm_13.enable().unwrap();
+        }
+    }
+
+    pub unsafe fn set_pulse (pulse_us: u64) {
+        let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
+        let pin_13 = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
+
+        update_pulse(pin_12.lock().unwrap(), pulse_us);
+        update_pulse(pin_13.lock().unwrap(), pulse_us);
     }
 
     // pub fn enable_motor_b (data: &web::Data<AppGpioState>) {
 
     // }
 
-    pub fn reverse_motor_a (data: &web::Data<AppGpioState>) {
-        let mut pin_13 = data.pin_13.lock().unwrap();
-        let mut pin_16 = data.pin_16.lock().unwrap();
-        let mut pin_19 = data.pin_19.lock().unwrap();
+    // pub fn reverse_motor_a (data: &web::Data<AppGpioState>) {
 
-
-        (*pin_13).set_low();
-        (*pin_16).set_high();
-        (*pin_19).set_high();
-    }
+    // }
 
     // pub fn reverse_motor_b (data: &web::Data<AppGpioState>) {
 
     // }
 
-    pub fn disable_motor_a (data: &web::Data<AppGpioState>) {
-        let mut pin_13 = data.pin_13.lock().unwrap();
-        let mut pin_16 = data.pin_16.lock().unwrap();
-        let mut pin_19 = data.pin_19.lock().unwrap();
-
-        (*pin_13).set_low();
-        (*pin_16).set_low();
-        (*pin_19).set_low();
-    }
+    // pub fn disable_motor_a (data: &web::Data<AppGpioState>) {
+        
+    // }
 
     // pub fn disable_motor_b (data: &web::Data<AppGpioState>) {
 

@@ -1,14 +1,11 @@
 pub mod gpio_model {
     use std::sync::Mutex;
     use rppal::gpio::{Gpio, OutputPin};
+    use once_cell::sync::Lazy;
+    use std::collections::HashMap;
+    use crate::api::models::globals::gpio;
 
-    pub struct AppGpioState {
-        pub pin_13: Mutex<OutputPin>,
-        pub pin_16: Mutex<OutputPin>,   
-        pub pin_19: Mutex<OutputPin>
-    }
-
-    pub fn output_pin (led: u8) -> OutputPin {
+    fn output_pin (led: u8) -> OutputPin {
         let gp = match Gpio::new() {
             Ok(val) => val,
             Err(e) => panic!("{}", e)
@@ -20,4 +17,13 @@ pub mod gpio_model {
     
         res.into_output()
     }
+
+    pub static mut GPIO_STATE: Lazy<HashMap<u8, Mutex<OutputPin>>> = Lazy::new(||
+        HashMap::from([
+            (gpio::PIN_16, Mutex::new(output_pin(gpio::PIN_16))),
+            (gpio::PIN_17, Mutex::new(output_pin(gpio::PIN_17))),
+            (gpio::PIN_22, Mutex::new(output_pin(gpio::PIN_22))),
+            (gpio::PIN_27, Mutex::new(output_pin(gpio::PIN_27))),
+        ])
+    );
 }
