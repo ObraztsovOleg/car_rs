@@ -21,4 +21,5 @@ pub mod commands {
     pub const TURN_RIGHT: u8 = 0x03;
     pub const TURN_LEFT: u8 = 0x04;
     pub const STOP: u8 = 0x05;
+    pub const STOP_INTERRUPT: u8 = 0x06;
 }

@@ -4,6 +4,8 @@ pub mod gpio_repository {
     use crate::api::models::globals::pwm;
     use crate::api::models::globals::gpio;
 
+    static mut INTERRUPT: bool = false; 
+
     pub unsafe fn set_start (forward: bool) {
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
         let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
@@ -40,14 +42,19 @@ pub mod gpio_repository {
         gpio_27.set_low();
     }
 
+    pub unsafe fn set_interrupt() { INTERRUPT = true; }
+
     pub unsafe fn set_turnside (left: bool) {
+        let pulse = pwm::SERVO_AVG_PULSE;
+        INTERRUPT = false;
+
         if left {
-            for mut pulse in pwm::SERVO_AVG_PULSE..=pwm::SERVO_MAX_PULSE {
-                pulse = update_pulse(pwm::PIN_13,100);
+            while pulse <= pwm::SERVO_MAX_PULSE && !INTERRUPT {
+                update_pulse(pwm::PIN_13, 5);
             }
         } else {
-            for mut pulse in pwm::SERVO_AVG_PULSE..=pwm::SERVO_MIN_PULSE {
-                pulse = update_pulse(pwm::PIN_13,-100);
+            while pulse >= pwm::SERVO_MIN_PULSE && !INTERRUPT {
+                update_pulse(pwm::PIN_13, -5);
             }
         }
         

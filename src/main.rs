@@ -1,7 +1,7 @@
 mod api;
 use crate::api::models::globals::commands::*;
 use crate::api::repository::gpio::gpio_repository::{
-    set_start,
+    set_start, set_interrupt,
     set_turnside, set_stop
 };
 
@@ -30,6 +30,7 @@ fn bit_handler(bytes: MutexGuard<'_, Vec<u8>>) {
             Some(&MOVE_FORWARD) =>  set_start(true),
             Some(&MOVE_BACKWARD) => set_start(false),
             Some(&STOP) => set_stop(),
+            Some(&STOP_INTERRUPT) => set_interrupt(),
 
             _ => tracing::info!("Sent unknown command")
         }
