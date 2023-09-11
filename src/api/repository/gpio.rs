@@ -17,7 +17,7 @@ pub mod gpio_repository {
         let mut gpio_27 = pin_27.lock().unwrap();
         let pwm_12 = pin_12.lock().unwrap();
 
-        if forward {
+        if !forward {
             gpio_22.set_high();
             gpio_27.set_low();
             pwm_12.enable().unwrap();
@@ -60,7 +60,7 @@ pub mod gpio_repository {
         let pulse_duration = pwm_pin.pulse_width().unwrap();
         let mut current_pulse = pulse_duration.as_micros() as u64;
         
-        if left {
+        if !left {
             while !INTERRUPT && current_pulse <= pwm::SERVO_MAX_PULSE {
                 current_pulse += pwm::SERVO_STEP;
                 pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
