@@ -11,22 +11,18 @@ pub mod gpio_repository {
     pub unsafe fn set_start (forward: bool) {
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
         let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
-        let pin_27 = GPIO_STATE.get_mut(&gpio::PIN_27).unwrap();
 
         let mut gpio_22 = pin_22.lock().unwrap();
-        let mut gpio_27 = pin_27.lock().unwrap();
         let pwm_12 = pin_12.lock().unwrap();
 
         if !forward {
-            gpio_22.set_high();
-            gpio_27.set_low();
-            pwm_12.enable().unwrap();
-            pwm_12.set_duty_cycle(0.5).unwrap();
-        } else {
-            gpio_27.set_high();
             gpio_22.set_low();
             pwm_12.enable().unwrap();
-            pwm_12.set_duty_cycle(0.5).unwrap();
+            pwm_12.set_duty_cycle(0.75).unwrap();
+        } else {
+            gpio_22.set_high();
+            pwm_12.enable().unwrap();
+            pwm_12.set_duty_cycle(0.0).unwrap();
         }
     }
 
