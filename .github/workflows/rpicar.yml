@@ -1,0 +1,16 @@
+name: rpicar
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  restart:
+
+    runs-on: self-hosted
+
+    steps:
+      - run: |
+          sudo systemctl restart rpicar.service
