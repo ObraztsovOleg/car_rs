@@ -1,10 +1,10 @@
 pub mod gpio {
     pub const PIN_22: u8 = 22;
-    pub const PIN_27: u8 = 27;
 }
 
 pub mod time {
-    pub const GUARD: u8 = 0;
+    pub const GUARD_MOVE: u8 = 0;
+    pub const GUARD_TURN: u8 = 1;
     pub const TIMER: i64 = 300;
 }
 
@@ -24,8 +24,7 @@ pub mod pwm {
 pub mod commands {
     pub const MOVE_FORWARD: u8 = 0x01;
     pub const MOVE_BACKWARD: u8 = 0x02;
-    pub const TURN_RIGHT: u8 = 0x03;
-    pub const TURN_LEFT: u8 = 0x04;
+    pub const TURN: u8 = 0x03;
     pub const STOP: u8 = 0x05;
     pub const STOP_INTERRUPT: u8 = 0x06;
 }

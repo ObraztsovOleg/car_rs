@@ -1,8 +1,8 @@
 mod api;
 use crate::api::models::globals::commands::*;
 use crate::api::repository::gpio::gpio_repository::{
-    set_start, set_interrupt,
-    set_turnside, set_stop, set_execution
+    set_start,
+    set_turnside, set_stop_move, set_execution
 };
 
 use axum::{
@@ -22,16 +22,12 @@ use std::{
 use std::sync::Arc;
 use std::thread;
 
-fn bit_handler(byte: Arc<Vec<u8>>) {
-    println!("{:?}", byte);
+fn bit_handler(bytes: Arc<Vec<u8>>) {
     unsafe {
-        match byte.first() {
-            Some(&TURN_LEFT) => set_turnside(true),
-            Some(&TURN_RIGHT) => set_turnside(false),
+        match bytes.first() {
+            Some(&TURN) => set_turnside(bytes),
             Some(&MOVE_FORWARD) =>  set_start(true),
             Some(&MOVE_BACKWARD) => set_start(false),
-            Some(&STOP_INTERRUPT) => set_interrupt(),
-            Some(&STOP) => set_stop(),
 
             _ => tracing::info!("Sent unknown command")
         }
