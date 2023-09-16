@@ -7,14 +7,15 @@ pub mod driver_repository {
     use std::thread;
     use std::sync::Arc;
     use crate::api::models::time::timer_model::update_timer_move;
+    use crate::api::models::error::error_model::mutex_guard;
 
     pub unsafe fn set_start (array: Arc<Vec<u8>>) {
         let forward = array[1] == 0;
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
         let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
 
-        let mut gpio_22 = pin_22.lock().unwrap();
-        let pwm_12 = pin_12.lock().unwrap();
+        let mut gpio_22 = mutex_guard(pin_22);
+        let pwm_12 = mutex_guard(pin_12);
 
         if forward {
             gpio_22.set_low();
@@ -33,8 +34,8 @@ pub mod driver_repository {
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
         let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
 
-        let mut gpio_22 = pin_22.lock().unwrap();
-        let pwm_12 = pin_12.lock().unwrap();
+        let mut gpio_22 = mutex_guard(pin_22);
+        let pwm_12 = mutex_guard(pin_12);
 
         pwm_12.disable().unwrap();
         gpio_22.set_low();
@@ -43,7 +44,7 @@ pub mod driver_repository {
     pub unsafe fn set_stop_turn() {
         INTERRUPT = true;
         let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
-        let pwm_pin = pin.lock().unwrap();
+        let pwm_pin = mutex_guard(pin);
 
         pwm_pin.set_pulse_width(Duration::from_micros(pwm::SERVO_AVG_PULSE)).unwrap();
     }
@@ -52,7 +53,7 @@ pub mod driver_repository {
         INTERRUPT = false;
         let left = array[1] == 0;
         let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
-        let pwm_pin = pin.lock().unwrap();
+        let pwm_pin = mutex_guard(pin);
     
         let pulse_duration = pwm_pin.pulse_width().unwrap();
         let mut current_pulse = pulse_duration.as_micros() as u64;
