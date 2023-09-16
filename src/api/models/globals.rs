@@ -11,9 +11,9 @@ pub mod pwm {
     pub const PIN_12: u8 = 12;
     pub const PIN_13: u8 = 13;
 
-    pub const DUTY_CYCLE_MAX: f64 = 1.0;
+    pub const DUTY_CYCLE_MAX: f64 = 0.8;
     pub const DUTY_CYCLE_AVG: f64 = 0.5;
-    pub const DUTY_CYCLE_MIN: f64 = 0.0;
+    pub const DUTY_CYCLE_MIN: f64 = 0.2;
     pub const PERIOD: u64 = 20;
     pub const FREQUENCY: f64 = 100.0;
     pub const SERVO_AVG_PULSE: u64 = 1500;
