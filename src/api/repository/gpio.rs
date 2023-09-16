@@ -39,10 +39,10 @@ pub mod gpio_repository {
     }
 
     pub unsafe fn set_stop_turn() {
-        let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
-        let pwm_pin = pin.lock().unwrap();
+        // let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
+        // let pwm_pin = pin.lock().unwrap();
 
-        pwm_pin.set_pulse_width(Duration::from_micros(pwm::SERVO_AVG_PULSE)).unwrap();
+        // pwm_pin.set_pulse_width(Duration::from_micros(pwm::SERVO_AVG_PULSE)).unwrap();
     }
 
     pub unsafe fn set_turnside (array: Arc<Vec<u8>>) {
@@ -60,7 +60,7 @@ pub mod gpio_repository {
 
         }
 
-        update_timer_turn();
+        // update_timer_turn();
     }
 
     pub unsafe fn set_execution () {
