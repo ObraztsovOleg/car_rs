@@ -1,4 +1,4 @@
-pub mod gpio_repository {
+pub mod driver_repository {
     use crate::api::models::pwm::pwm_model::PWM_STATE;
     use crate::api::models::gpio::gpio_model::GPIO_STATE;
     use crate::api::models::globals::pwm;
@@ -8,9 +8,8 @@ pub mod gpio_repository {
     use std::sync::Arc;
     use crate::api::models::time::timer_model::update_timer_move;
 
-    static mut INTERRUPT: bool = false;
-
-    pub unsafe fn set_start (forward: bool) {
+    pub unsafe fn set_start (array: Arc<Vec<u8>>) {
+        let forward = array[1] == 0;
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
         let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
 
@@ -20,11 +19,11 @@ pub mod gpio_repository {
         if !forward {
             gpio_22.set_low();
             pwm_12.enable().unwrap();
-            pwm_12.set_duty_cycle(0.75).unwrap();
+            pwm_12.set_duty_cycle(pwm::DUTY_CYCLE_MAX).unwrap();
         } else {
             gpio_22.set_high();
             pwm_12.enable().unwrap();
-            pwm_12.set_duty_cycle(0.0).unwrap();
+            pwm_12.set_duty_cycle(pwm::DUTY_CYCLE_MIN).unwrap();
         }
 
         update_timer_move();
@@ -42,7 +41,6 @@ pub mod gpio_repository {
     }
 
     pub unsafe fn set_stop_turn() {
-        INTERRUPT = true;
         let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
         let pwm_pin = pin.lock().unwrap();
 
@@ -50,7 +48,6 @@ pub mod gpio_repository {
     }
 
     pub unsafe fn set_turnside (array: Arc<Vec<u8>>) {
-        INTERRUPT = false;
         let left = array[1] == 0;
         let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
         let pwm_pin = pin.lock().unwrap();
@@ -58,17 +55,19 @@ pub mod gpio_repository {
         let pulse_duration = pwm_pin.pulse_width().unwrap();
         let mut current_pulse = pulse_duration.as_micros() as u64;
         
-        if !left {
-            while !INTERRUPT && current_pulse <= pwm::SERVO_MAX_PULSE {
-                current_pulse += pwm::SERVO_STEP;
-                pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
-                thread::sleep(Duration::from_millis(20));
-            }
-        } else {
-            while !INTERRUPT && current_pulse >= pwm::SERVO_MIN_PULSE {
-                current_pulse -= pwm::SERVO_STEP;
-                pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
-                thread::sleep(Duration::from_millis(20));
+        if current_pulse == pwm::SERVO_AVG_PULSE {
+            if !left {
+                while current_pulse <= pwm::SERVO_MAX_PULSE {
+                    current_pulse += pwm::SERVO_STEP;
+                    pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
+                    thread::sleep(Duration::from_millis(20));
+                }
+            } else {
+                while current_pulse >= pwm::SERVO_MIN_PULSE {
+                    current_pulse -= pwm::SERVO_STEP;
+                    pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
+                    thread::sleep(Duration::from_millis(20));
+                }
             }
         }
     }

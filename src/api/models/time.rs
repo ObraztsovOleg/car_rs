@@ -1,7 +1,7 @@
 pub mod timer_model {
     use timer;
     use chrono;
-    use crate::api::repository::gpio::gpio_repository::set_stop_move;
+    use crate::api::repository::driver::driver_repository::set_stop_move;
     use crate::api::models::globals::time;
     use once_cell::sync::Lazy;
     use std::collections::HashMap;
