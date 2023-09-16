@@ -4,7 +4,6 @@ pub mod gpio_repository {
     use crate::api::models::globals::pwm;
     use crate::api::models::globals::gpio;
     use std::time::Duration;
-    use std::thread;
     use std::sync::Arc;
     use crate::api::models::time::timer_model::{update_timer_move, update_timer_turn};
 
@@ -53,11 +52,11 @@ pub mod gpio_repository {
         let pwm_pin = pin.lock().unwrap();
         
         if !left {
-            let pulse = ((position as u64 - 0) * (pwm::SERVO_MAX_PULSE - pwm::SERVO_AVG_PULSE) / 100) + pwm::SERVO_AVG_PULSE;
+            let pulse = ((position as u64) * (pwm::SERVO_MAX_PULSE - pwm::SERVO_AVG_PULSE) / 100) + pwm::SERVO_AVG_PULSE;
             pwm_pin.set_pulse_width(Duration::from_micros(pulse)).unwrap();
         } else {
-            let pulse = ((position as u64 - 0) * (pwm::SERVO_AVG_PULSE - pwm::SERVO_MIN_PULSE) / 100) + pwm::SERVO_MIN_PULSE;
-            pwm_pin.set_pulse_width(Duration::from_micros(pulse as u64)).unwrap();
+            let pulse = ((position as u64) * (pwm::SERVO_AVG_PULSE - pwm::SERVO_MIN_PULSE) / 100) + pwm::SERVO_MIN_PULSE;
+            pwm_pin.set_pulse_width(Duration::from_micros(pulse)).unwrap();
 
         }
 

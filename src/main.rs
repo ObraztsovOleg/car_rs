@@ -2,7 +2,7 @@ mod api;
 use crate::api::models::globals::commands::*;
 use crate::api::repository::gpio::gpio_repository::{
     set_start,
-    set_turnside, set_stop_move, set_execution
+    set_turnside, set_execution
 };
 
 use axum::{

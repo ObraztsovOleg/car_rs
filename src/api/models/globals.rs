@@ -5,7 +5,8 @@ pub mod gpio {
 pub mod time {
     pub const GUARD_MOVE: u8 = 0;
     pub const GUARD_TURN: u8 = 1;
-    pub const TIMER: i64 = 300;
+    pub const TIMER_MOVE: i64 = 300;
+    pub const TIMER_TUTN: i64 = 300;
 }
 
 pub mod pwm {
@@ -17,14 +18,10 @@ pub mod pwm {
     pub const SERVO_AVG_PULSE: u64 = 1500;
     pub const SERVO_MIN_PULSE: u64 = 1350;
     pub const SERVO_MAX_PULSE: u64 = 1800;
-    pub const SERVO_STEP: u64 = 50;
-
 }
 
 pub mod commands {
     pub const MOVE_FORWARD: u8 = 0x01;
     pub const MOVE_BACKWARD: u8 = 0x02;
     pub const TURN: u8 = 0x03;
-    pub const STOP: u8 = 0x05;
-    pub const STOP_INTERRUPT: u8 = 0x06;
 }
