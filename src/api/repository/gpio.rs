@@ -4,8 +4,11 @@ pub mod gpio_repository {
     use crate::api::models::globals::pwm;
     use crate::api::models::globals::gpio;
     use std::time::Duration;
+    use std::thread;
     use std::sync::Arc;
-    use crate::api::models::time::timer_model::{update_timer_move, update_timer_turn};
+    use crate::api::models::time::timer_model::update_timer_move;
+
+    static mut INTERRUPT: bool = false;
 
     pub unsafe fn set_start (forward: bool) {
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
@@ -39,28 +42,35 @@ pub mod gpio_repository {
     }
 
     pub unsafe fn set_stop_turn() {
-        // let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
-        // let pwm_pin = pin.lock().unwrap();
+        INTERRUPT = true;
+        let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
+        let pwm_pin = pin.lock().unwrap();
 
-        // pwm_pin.set_pulse_width(Duration::from_micros(pwm::SERVO_AVG_PULSE)).unwrap();
+        pwm_pin.set_pulse_width(Duration::from_micros(pwm::SERVO_AVG_PULSE)).unwrap();
     }
 
     pub unsafe fn set_turnside (array: Arc<Vec<u8>>) {
+        INTERRUPT = false;
         let left = array[1] == 0;
-        let position = array[2];
         let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
         let pwm_pin = pin.lock().unwrap();
+    
+        let pulse_duration = pwm_pin.pulse_width().unwrap();
+        let mut current_pulse = pulse_duration.as_micros() as u64;
         
         if !left {
-            let pulse = ((position as u64) * (pwm::SERVO_MAX_PULSE - pwm::SERVO_AVG_PULSE) / 100) + pwm::SERVO_AVG_PULSE;
-            pwm_pin.set_pulse_width(Duration::from_micros(pulse)).unwrap();
+            while !INTERRUPT && current_pulse <= pwm::SERVO_MAX_PULSE {
+                current_pulse += pwm::SERVO_STEP;
+                pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
+                thread::sleep(Duration::from_millis(20));
+            }
         } else {
-            let pulse = ((position as u64) * (pwm::SERVO_AVG_PULSE - pwm::SERVO_MIN_PULSE) / 100) + pwm::SERVO_MIN_PULSE;
-            pwm_pin.set_pulse_width(Duration::from_micros(pulse)).unwrap();
-
+            while !INTERRUPT && current_pulse >= pwm::SERVO_MIN_PULSE {
+                current_pulse -= pwm::SERVO_STEP;
+                pwm_pin.set_pulse_width(Duration::from_micros(current_pulse as u64)).unwrap();
+                thread::sleep(Duration::from_millis(20));
+            }
         }
-
-        // update_timer_turn();
     }
 
     pub unsafe fn set_execution () {
