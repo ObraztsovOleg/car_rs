@@ -3,6 +3,11 @@ pub mod gpio {
     pub const PIN_27: u8 = 27;
 }
 
+pub mod time {
+    pub const GUARD: u8 = 0;
+    pub const TIMER: i64 = 300;
+}
+
 pub mod pwm {
     pub const PIN_12: u8 = 12;
     pub const PIN_13: u8 = 13;

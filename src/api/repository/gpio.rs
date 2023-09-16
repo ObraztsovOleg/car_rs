@@ -5,6 +5,7 @@ pub mod gpio_repository {
     use crate::api::models::globals::gpio;
     use std::time::Duration;
     use std::thread;
+    use crate::api::models::time::timer_model::update_timer;
 
     static mut INTERRUPT: bool = false;
 
@@ -24,6 +25,8 @@ pub mod gpio_repository {
             pwm_12.enable().unwrap();
             pwm_12.set_duty_cycle(0.0).unwrap();
         }
+
+        update_timer();
     }
 
     pub unsafe fn set_stop () {
