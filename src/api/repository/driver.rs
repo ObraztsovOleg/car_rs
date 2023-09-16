@@ -11,20 +11,22 @@ pub mod driver_repository {
 
     pub unsafe fn set_start (array: Arc<Vec<u8>>) {
         let forward = array[1] == 0;
+        let speed = array[2];
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
         let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
 
         let mut gpio_22 = mutex_guard(pin_22);
         let pwm_12 = mutex_guard(pin_12);
+        let duty_cycle = (speed as f64) * (pwm::DUTY_CYCLE_MAX - pwm::DUTY_CYCLE_MIN) / 100.0 + pwm::DUTY_CYCLE_MIN;
 
-        if forward {
+        if forward { 
             gpio_22.set_low();
             pwm_12.enable().unwrap();
-            pwm_12.set_duty_cycle(pwm::DUTY_CYCLE_MAX).unwrap();
+            pwm_12.set_duty_cycle(duty_cycle).unwrap();
         } else {
             gpio_22.set_high();
             pwm_12.enable().unwrap();
-            pwm_12.set_duty_cycle(pwm::DUTY_CYCLE_MIN).unwrap();
+            pwm_12.set_duty_cycle(duty_cycle).unwrap();
         }
 
         update_timer_move();
