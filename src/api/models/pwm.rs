@@ -6,6 +6,8 @@ pub mod pwm_model {
     use std::collections::HashMap;
     use crate::api::models::globals::pwm;
 
+    pub static mut INTERRUPT: bool = false;
+
     pub fn pwm_pin_period (channel: Channel, period_ms: u64, pulse_us: u64, enable: bool) -> Pwm {
         return match Pwm::with_period (
             channel,

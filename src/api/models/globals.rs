@@ -14,7 +14,7 @@ pub mod pwm {
     pub const DUTY_CYCLE_MAX: f64 = 0.75;
     pub const DUTY_CYCLE_MIN: f64 = 0.0;
     pub const PERIOD: u64 = 20;
-    pub const FREQUENCY: f64 = 500.0;
+    pub const FREQUENCY: f64 = 100.0;
     pub const SERVO_AVG_PULSE: u64 = 1500;
     pub const SERVO_MIN_PULSE: u64 = 1350;
     pub const SERVO_MAX_PULSE: u64 = 1800;
