@@ -14,8 +14,6 @@ pub mod driver_repository {
         let speed = array[2];
         let pin_12 = PWM_STATE.get_mut(&pwm::PIN_12).unwrap();
         let pin_22 = GPIO_STATE.get_mut(&gpio::PIN_22).unwrap();
-
-        tracing::info!("speed: {}", speed);
         let mut gpio_22 = mutex_guard(pin_22);
         let pwm_12 = mutex_guard(pin_12);
 
@@ -56,7 +54,6 @@ pub mod driver_repository {
     pub unsafe fn set_turnside (array: Arc<Vec<u8>>) {
         INTERRUPT = false;
         let left = array[1] == 0;
-        tracing::info!("left: {}", left);
 
         let pin = PWM_STATE.get_mut(&pwm::PIN_13).unwrap();
         let pwm_pin = mutex_guard(pin);
