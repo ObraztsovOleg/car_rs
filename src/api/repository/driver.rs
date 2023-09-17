@@ -17,7 +17,7 @@ pub mod driver_repository {
         let mut gpio_22 = mutex_guard(pin_22);
         let pwm_12 = mutex_guard(pin_12);
 
-        if forward {
+        if !forward {
             let duty_cycle = (speed as f64) * (pwm::DUTY_CYCLE_MAX - pwm::DUTY_CYCLE_AVG) / 100.0 + pwm::DUTY_CYCLE_AVG;
             gpio_22.set_low();
             pwm_12.enable().unwrap();
