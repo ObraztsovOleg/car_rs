@@ -1,97 +1,55 @@
-mod api;
-use crate::api::models::globals::commands::*;
+use peripheral::DriverMessage;
+use tokio::sync::mpsc::UnboundedSender;
 use tower_http::trace::{TraceLayer, DefaultMakeSpan};
-use std::sync::Arc;
-use std::thread;
-use crate::api::repository::driver::driver_repository::{
-    set_start, set_stop_turn,
-    set_turnside, set_execution
-};
+
 use axum::{
-    extract::ws::{Message, WebSocket, WebSocketUpgrade},
+    extract::{ws::{Message, WebSocket, WebSocketUpgrade}, State},
     response::IntoResponse,
     routing::get,
     Router
 };
-use std::{
-    net::SocketAddr,
-    ops::ControlFlow
-};
+use std::net::SocketAddr;
 
-fn bit_handler(bytes: Arc<Vec<u8>>) {
-    unsafe {
-        match bytes.first() {
-            Some(&TURN) => set_turnside(bytes),
-            Some(&MOVE_FORWARD) =>  set_start(bytes),
-            Some(&STOP) => set_stop_turn(),
+mod peripheral;
 
-            _ => tracing::info!("Sent unknown command")
-        }
-    }
-}
-
-async fn handle_connection (mut socket: WebSocket) {
+async fn handle_connection (mut socket: WebSocket, sender: UnboundedSender<DriverMessage>) {
     while let Some(msg) = socket.recv().await {
         if let Ok(msg) = msg {
-            if process_message (msg).is_break() {
-                unsafe { set_execution() };
-                return;
-            }
-
-            if socket
-                .send(Message::Binary(vec![0x00]))
-                .await
-                .is_err()
-            {
-                println!("client abruptly disconnected");
-                unsafe { set_execution() };
-                return;
+            match msg {
+                Message::Text(text) => {
+                    tracing::error!("Unknown message: {text}");
+                },
+                Message::Binary(data) => {
+                    let moving = i8::from_be_bytes([data[0]]);
+                    let turning = i8::from_be_bytes([data[1]]);
+                    let msg = DriverMessage {moving, turning};
+                    sender.send(msg).unwrap();
+                },
+                Message::Ping(data) => {
+                    socket.send(Message::Pong(data)).await;
+                },
+                Message::Pong(_) => {},
+                Message::Close(_) => {
+                    break;
+                },
             }
         } else {
             tracing::info!("Client abruptly disconnected");
-            unsafe { set_execution() };
             return;
         }
     }
 }
 
-fn process_message (msg: Message) -> ControlFlow<(), ()> {
-    match msg {
-        Message::Binary(array) => {
-            let bytes = Arc::new(array);
-            let bytes = Arc::clone(&bytes);
-
-            thread::spawn(move || bit_handler(bytes));
-        }
-        Message::Close(c) => {
-            if let Some(cf) = c {
-                tracing::info!(
-                    "Sent close with code {} and reason `{}`",
-                    cf.code, cf.reason
-                );
-            } else {
-                tracing::info!("Sent close message without CloseFrame");
-            }
-
-            unsafe { set_execution() };
-            return ControlFlow::Break(());
-        }
-        _ => {
-            tracing::info!("Sent not a binary info");
-        }
-    }
-
-    ControlFlow::Continue(())
-}
-
 async fn ws_handler (
+    State(sender): State<UnboundedSender<DriverMessage>>,
     ws: WebSocketUpgrade
 ) -> impl IntoResponse {
-    ws.on_upgrade(move |socket| handle_connection(socket))
+    ws.on_upgrade(move |socket| handle_connection(socket, sender))
 }
   
 #[tokio::main]
 async fn main () {
+    let sender = peripheral::start().unwrap();
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::INFO)
         .init();
@@ -103,7 +61,7 @@ async fn main () {
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::default().include_headers(true))
-        );
+        ).with_state(sender);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 5000));
 
